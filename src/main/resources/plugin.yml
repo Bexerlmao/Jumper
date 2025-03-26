@@ -1,0 +1,5 @@
+name: Jumper
+version: '1.0-SNAPSHOT'
+main: cn.ycraft.jumper.Main
+api-version: '1.21'
+author: "Bexerlmao"
