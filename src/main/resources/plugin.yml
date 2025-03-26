@@ -3,3 +3,8 @@ version: '1.0-SNAPSHOT'
 main: cn.ycraft.jumper.Main
 api-version: '1.21'
 author: "Bexerlmao"
+command:
+  jump:
+    description: 开启或关闭积分板
+    usage: /jump
+    aliases: [计数]
