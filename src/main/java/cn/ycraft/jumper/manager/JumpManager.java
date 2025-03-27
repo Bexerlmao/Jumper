@@ -1,91 +1,33 @@
 package cn.ycraft.jumper.manager;
 
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.*;
 
 public class JumpManager {
-    private UUID uuid;
-    private Integer jumpCount;
-    private static Map<Boolean, List<Player>> states = Map.of(true, new  ArrayList<Player>(), false, new ArrayList<Player>());
-    private static List<JumpManager> jumpCommandInfos = new ArrayList<>();
 
-    public JumpManager(UUID uuid){
-        this.uuid = uuid;
-        this.jumpCount = 0;
+    protected final Map<UUID, Integer> jumps = new HashMap<>();
+    protected final Set<UUID> enabled = new HashSet<>();
+
+    public int get(@NotNull Player player) {
+        return jumps.getOrDefault(player.getUniqueId(), 0);
     }
 
-    public UUID getUuid() {
-        return uuid;
+    public int add(@NotNull Player player, int amount) {
+        int after = get(player) + amount;
+        jumps.put(player.getUniqueId(), amount);
+        return after;
     }
 
-    public Integer getJumpCount() {
-        return jumpCount;
+    public boolean isEnabled(@NotNull Player player) {
+        return enabled.contains(player.getUniqueId());
     }
 
-    public List<JumpManager> getJumpCommandInfos() {
-        return jumpCommandInfos;
+    public void setEnabled(@NotNull Player player, boolean state) {
+        if (state) enabled.add(player.getUniqueId());
+        else enabled.remove(player.getUniqueId());
     }
 
-    public Boolean getState(Player player) {
-        AtomicReference<Boolean> state = new AtomicReference<>();
-        states.forEach((k, v) -> {
-            for(Player p : v){
-                if(p.getUniqueId() == player.getUniqueId()){
-                    state.set(k);
-                }
-            }
-        });
-        if(state.get() == null){
-            states.get(true).add(player);
-            state.set(true);
-        }
-        return state.get();
-    }
-
-    public void setReverseState(Player player) {
-        states.forEach((k, v) -> {
-            for (Player p : v){
-                if(p.getUniqueId() == player.getUniqueId()){
-                    states.get(k).remove(p);
-                    states.get(!k).add(player);
-                }
-            }
-        });
-    }
-
-    public static void jumpCountIncrement(Player player){
-        searchJumpManagerByUuid(player.getUniqueId()).jumpCount++;
-    }
-
-    public static JumpManager searchJumpManagerByUuid(UUID uuid){
-        JumpManager result = null;
-
-        for(JumpManager jumpCommandInfo : jumpCommandInfos){
-            if(jumpCommandInfo.getUuid() == uuid){
-                result = jumpCommandInfo;
-                break;
-            }
-        }
-
-        if(result == null){
-            result = new JumpManager(uuid);
-            jumpCommandInfos.add(result);
-        }
-
-        return result;
-    }
-
-    public static void createJumpManagerIntoList(UUID uuid){
-        jumpCommandInfos.add(new JumpManager(uuid));
-    }
-
-    public void removeJumpManagerFromList(UUID uuid){
-        jumpCommandInfos.remove(searchJumpManagerByUuid(uuid));
-    }
 
 }

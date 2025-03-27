@@ -1,8 +1,9 @@
 package cn.ycraft.jumper.listener;
 
+import cn.ycraft.jumper.Main;
 import cn.ycraft.jumper.manager.JumpManager;
-import cn.ycraft.jumper.manager.SidebarManager;
 import com.destroystokyo.paper.event.player.PlayerJumpEvent;
+import net.kyori.adventure.text.Component;
 import net.megavex.scoreboardlibrary.api.sidebar.Sidebar;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -13,20 +14,24 @@ public class ScoreboardListener implements Listener {
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
-        SidebarManager.createSidebarManagerIntoList(event.getPlayer());
+        Sidebar bar = Main.getSidebarManager().get(event.getPlayer());
+        bar.title(Component.text("YourCraft"));
     }
 
     @EventHandler
     public void onPlayerLeft(PlayerQuitEvent event) {
-        Sidebar bar = SidebarManager.searchSidebarByPlayer(event.getPlayer()).getSidebar();
-        if (bar != null) {bar.close();}
-        SidebarManager.removeSidebarManagerFromList(event.getPlayer());
+        Main.getSidebarManager().destroy(event.getPlayer());
     }
 
     @EventHandler
-    public void onPlayerJump(PlayerJumpEvent event){
-        JumpManager.jumpCountIncrement(event.getPlayer());
-        SidebarManager.jumpCountVisibility(event.getPlayer());
+    public void onPlayerJump(PlayerJumpEvent event) {
+        JumpManager man = Main.getJumpManager();
+        if (man.isEnabled(event.getPlayer())) {
+            int after = man.add(event.getPlayer(), 1);
+            Main.getSidebarManager().updateJump(event.getPlayer(), after);
+        } else {
+            Main.getSidebarManager().updateJump(event.getPlayer(), -1);
+        }
     }
 
 
