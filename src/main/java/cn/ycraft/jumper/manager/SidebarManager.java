@@ -23,10 +23,6 @@ public class SidebarManager {
         sidebar = Main.getScoreboard().createSidebar();
 
         sidebar.line(0, Component.text(player.getName()));
-        sidebar.line(2, () -> {
-            var time = dtf.format(new Date());
-            return Component.text(time, NamedTextColor.GRAY);
-        });
     }
 
 
@@ -68,13 +64,19 @@ public class SidebarManager {
 
     public static void jumpCountVisibility(Player player){
         JumpManager jumpManager = JumpManager.searchJumpManagerByUuid(player.getUniqueId());
-        if(jumpManager.getState()){
+        if(jumpManager.getState(player)){
             sidebar.line(1, () -> Component.text(JumpManager.searchJumpManagerByUuid(player.getUniqueId()).getJumpCount()));
         }else{
             sidebar.line(1,null);
         }
-        jumpManager.setState(!jumpManager.getState());
+        jumpManager.setReverseState(player);
 
     }
 
+    public static void tick(){
+        sidebar.line(2, () -> {
+            var time = dtf.format(new Date());
+            return Component.text(time, NamedTextColor.GRAY);
+        });
+    }
 }

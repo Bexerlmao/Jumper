@@ -23,6 +23,7 @@ public class JumpCommand implements CommandExecutor {
 
         SidebarManager.jumpCountVisibility(player);
 
+
         return false;
     }
 

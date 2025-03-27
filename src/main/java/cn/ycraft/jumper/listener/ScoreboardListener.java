@@ -25,7 +25,8 @@ public class ScoreboardListener implements Listener {
 
     @EventHandler
     public void onPlayerJump(PlayerJumpEvent event){
-        JumpManager.jumpCountIncrement(event.getPlayer().getUniqueId());
+        JumpManager.jumpCountIncrement(event.getPlayer());
+        SidebarManager.jumpCountVisibility(event.getPlayer());
     }
 
 
